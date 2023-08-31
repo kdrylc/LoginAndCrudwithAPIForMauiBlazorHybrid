@@ -1,0 +1,78 @@
+﻿@page "/student"
+
+@using LoginForMauiBlazorHybrid.Models;
+@using LoginForMauiBlazorHybrid.Services;
+@inject IAppService app
+@inject NavigationManager nav
+
+@if (IsLoading)
+{
+    <div style="position:fixed;top:50%;left:50%;margin-top:-50px;margin-left:-100px">
+        <img src="images/book.gif" />
+    </div>
+}
+else
+{
+    <a href="/student/create">Add Student</a>
+
+    <div class="container">
+        <table class="table">
+            <thead class="table-primary">
+                <tr>
+                    <th>Id</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Email</th>
+                    <th>Gender</th>
+                    <th>Adress</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in DataSource)
+                {
+                    <tr>
+                        <td>@item.StudentID</td>
+                        <td>@item.FirstName</td>
+                        <td>@item.LastName</td>
+                        <td>@item.Email</td>
+                        <td>@item.Gender</td>
+                        <td>@item.Address</td>
+                        <td>
+                            <NavLink href="@($"/student/edit/{item.StudentID}")" class="btn btn-outline-success ">Edit </NavLink>
+                            <button class="btn btn-danger" @onclick="(()=>HandleDelete(item.StudentID))"> Delete</button>
+                        </td>
+
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+
+@code {
+    IGrid Grid { get; set; }
+    public List<StudentModel> DataSource { get; set; } = new List<StudentModel>();
+    public int StudentID {get;set;}
+    public bool IsLoading { get; set; } = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        await Task.Delay(500);
+      
+            DataSource = await app.GetAllStudents();
+        IsLoading = false;
+
+    }
+
+    public async Task HandleDelete(int id)
+    {
+        await Task.Delay(500);
+        StudentID = id;
+        await app.DeleteStudent(StudentID);
+        nav.NavigateTo("/student");
+        IsLoading = false;
+    }
+}

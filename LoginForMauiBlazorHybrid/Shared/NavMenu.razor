@@ -1,0 +1,48 @@
+﻿@using LoginForMauiBlazorHybrid.Models;
+@inject NavigationManager NavManager;
+<div class="top-row ps-3 navbar navbar-dark">
+	<div class="container-fluid">
+		<a class="navbar-brand" href="">LoginFlowInMauiBlazorApp</a>
+		<button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+	</div>
+</div>
+
+<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+	<nav class="flex-column">
+		<div class="nav-item px-3">
+			<NavLink class="nav-link" href="dashboard" Match="NavLinkMatch.All">
+				 Home
+			</NavLink>
+		</div>
+		<div class="nav-item px-3">
+			<NavLink class="nav-link" href="student">
+				 Student
+			</NavLink>
+		</div>
+		<div class="nav-item px-3">
+			<NavLink class="nav-link" href="#" @onclick="SignOut">
+				<span class="oi oi-list-rich" aria-hidden="true"></span> Sign Out
+			</NavLink>
+		</div>
+	</nav>
+</div>
+
+@code {
+	private bool collapseNavMenu = true;
+
+	private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+	private void ToggleNavMenu()
+	{
+		collapseNavMenu = !collapseNavMenu;
+	}
+
+	private void SignOut()
+	{
+		SecureStorage.RemoveAll();
+		Setting.UserBasicDetail = null;
+		NavManager.NavigateTo("/login");
+	}
+}

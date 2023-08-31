@@ -1,0 +1,92 @@
+﻿@page "/student/create"
+@page "/student/edit/{Id:int}"
+
+@using LoginForMauiBlazorHybrid.Models;
+@using LoginForMauiBlazorHybrid.Services;
+
+@inject IAppService app
+@inject NavigationManager nav
+
+@if (IsLoading)
+{
+        <div style="position:fixed;top:50%;left:50%;margin-top:-50px;margin-left:-100px">
+        <img src="images/book.gif" />
+    </div>
+}
+else
+{
+    <div class="container">
+        <EditForm Model="Student" OnValidSubmit="Submit">
+            <DataAnnotationsValidator></DataAnnotationsValidator>
+            <ValidationSummary></ValidationSummary>
+            <div class="form-group">
+                <label>First Name</label>
+                <input class="form-control" @bind-value="@Student.FirstName" placeholder="Enter First Name">
+                <ValidationMessage For="@(()=> Student.FirstName)" />
+            </div>
+            <div class="form-group">
+                <label>Last Name</label>
+                <input class="form-control" @bind-value="@Student.LastName" placeholder="Enter LastName ">
+                <ValidationMessage For="@(()=> Student.LastName)" />
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input class="form-control" @bind-value="@Student.Email" placeholder="Enter Email ">
+                <ValidationMessage For="@(()=> Student.Email)" />
+            </div>
+            <div class="form-group">
+                <label>Gender</label>
+                <input class="form-control" @bind-value="@Student.Gender" placeholder="Enter Gender ">
+                <ValidationMessage For="@(()=> Student.Gender)" />
+            </div>
+            <div class="form-group">
+                <label>Address</label>
+                <input class="form-control" @bind-value="@Student.Address" placeholder="Enter Address ">
+                <ValidationMessage For="@(()=> Student.Address)" />
+            </div>
+            <div class="text-center mt-2">
+                <button class="btn btn-primary" type="submit">
+                    <span class="@_spinnerClass" role="status" aria-hidden="true"></span>
+                    Submit
+                </button>
+            </div>
+        </EditForm>
+    </div>
+}
+
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+    StudentModel Student { get; set; } = new StudentModel();
+    private string _spinnerClass = "";
+    public bool IsLoading { get; set; } = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.Delay(2000);
+        if (Id == 0)
+        {
+            IsLoading = false;
+        }
+        else
+        {
+            Student = await app.GetById(Id);
+            IsLoading = false;
+        }
+    }
+
+    public async Task Submit()
+    {
+        if (Id == 0)
+        {
+            var result = await app.AddUpdateStudent(Student);
+        }
+        else
+        {
+            var result = await app.AddUpdateStudent(Student);
+        }
+        nav.NavigateTo("/student");
+    }
+
+}
